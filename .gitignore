@@ -1,0 +1,6 @@
+.env
+RAG_Worker.py
+embedders.py
+
+embeddings.csv
+/__pycache__/
