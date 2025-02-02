@@ -57,11 +57,11 @@ class StockAnalysisRAG:
             [stock_data['Date'].dt.year.rename('Year'), 
              stock_data['Date'].dt.quarter.rename('Quarter')]
         ).agg({
-            'Open': 'mean',
-            'High': 'mean',
-            'Low': 'mean',
-            'Close': 'mean',
-            'Volume': 'mean'
+            'Open': lambda x: round(x.mean(), 2),
+            'High': lambda x: round(x.mean(), 2),
+            'Low': lambda x: round(x.mean(), 2),
+            'Close': lambda x: round(x.mean(), 2),
+            'Volume': lambda x: round(x.mean(), 2)
         })
         
         # Convert index to proper datetime using quarter start dates
@@ -105,9 +105,9 @@ class StockAnalysisRAG:
     def get_stock_insights(self, symbol: str) -> Tuple[pd.DataFrame, str]:
         """Main function to get stock analysis and price data"""
         try:
-            monthly_prices = self.get_quarterly_averages(symbol)
-            analysis = self.analyze_stock(symbol, monthly_prices)
-            return monthly_prices, analysis
+            quarterly_prices = self.get_quarterly_averages(symbol)
+            analysis = self.analyze_stock(symbol, quarterly_prices)
+            return quarterly_prices, analysis
             
         except Exception as e:
             logger.error(f"Error analyzing stock {symbol}: {str(e)}")
