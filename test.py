@@ -1,4 +1,4 @@
-from faiss_rag import StockAnalysisRAG
+from backend.faiss_rag import StockAnalysisRAG
 import os
 
 # Initialize with your configurations
