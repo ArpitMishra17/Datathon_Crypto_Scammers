@@ -8,6 +8,16 @@ from typing import Dict, Tuple, List
 import logging
 import dotenv
 
+
+
+
+
+
+
+
+
+
+
 dotenv.load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_TOKEN")
 PATH = "../Data/stock_data.csv"
