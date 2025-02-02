@@ -6,13 +6,23 @@ from huggingface_hub import InferenceClient
 import os
 from dotenv import load_dotenv
 import yfinance as yf
-import math
+import logger
+from faiss_rag import StockAnalysisRAG
+import pandas as pd
 import fastapi.middleware.cors as cors
+
 # Load environment variables
 load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI()
+# Pydantic Stuff
+class StockResponse(BaseModel):
+    symbol: str
+    pricesDF: dict 
+    analysis: str
+    narrative: str
+
 from fastapi.middleware.cors import CORSMiddleware
 
 # Initialize FastAPI app
@@ -30,6 +40,17 @@ app.add_middleware(
 # API keys
 HF_API_TOKEN = os.getenv("HF_API_KEY")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
+
+# Pydantic Stuff
+class StockResponse(BaseModel):
+    symbol: str
+    pricesDF: dict 
+    analysis: str
+    narrative: str
+
+# Initialize analyzer
+FAISS_INDEX_PATH = "stock_index.faiss"
+analyzer = StockAnalysisRAG(FAISS_INDEX_PATH)
 
 # NewsProcessor class to handle news-related tasks
 class NewsProcessor:
@@ -219,3 +240,22 @@ async def get_financial_data_endpoint(request: CompanyRequest):
         return {"ticker_symbol": ticker_symbol, "financial_data": financial_data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/analyze/{symbol}", response_model=StockResponse)
+async def analyze_stock(symbol: str):
+    try:
+        # Get stock analysis
+        prices, analysis, narrative = analyzer.get_stock_insights(symbol)
+        prices = prices.to_dict()
+
+        return StockResponse(
+            symbol=symbol,
+            pricesDF=prices,
+            analysis=analysis,
+            narrative= narrative
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error analyzing stock {symbol}: {str(e)}"
+        )
