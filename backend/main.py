@@ -6,12 +6,26 @@ from huggingface_hub import InferenceClient
 import os
 from dotenv import load_dotenv
 import yfinance as yf
-
+import math
+import fastapi.middleware.cors as cors
 # Load environment variables
 load_dotenv()
 
 # Initialize FastAPI app
 app = FastAPI()
+from fastapi.middleware.cors import CORSMiddleware
+
+# Initialize FastAPI app
+app = FastAPI()
+
+# Apply CORS middleware correctly
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # API keys
 HF_API_TOKEN = os.getenv("HF_API_KEY")
@@ -130,27 +144,35 @@ class FinancialProcessor:
             raise ValueError("Failed to infer ticker symbol")
 
     def get_financial_data(self, ticker_symbol: str):
-        # Fetch the company's financial data using yfinance
-        company = yf.Ticker(ticker_symbol)
+        """Fetch financial data for a given ticker symbol using yfinance."""
+        try:
+            company = yf.Ticker(ticker_symbol)
+            income_statement = company.financials
 
-        # Get the income statement (annual data)
-        income_statement = company.financials
+            # Check if required fields exist
+            if "Total Revenue" not in income_statement.index or "Net Income" not in income_statement.index:
+                raise ValueError("Financial data (revenue or profit) not available for the given ticker symbol.")
 
-        # Check if the required fields exist
-        if "Total Revenue" not in income_statement.index or "Net Income" not in income_statement.index:
-            raise ValueError("Financial data (revenue or profit) not available for the given ticker symbol.")
+            # Extract revenue and net income for the last 5 years
+            revenue = income_statement.loc["Total Revenue"].iloc[:5].to_dict()
+            net_income = income_statement.loc["Net Income"].iloc[:5].to_dict()
 
+            # Replace NaN values with None (or 0)
+            def replace_nan(value):
+                return value if not math.isnan(value) else None
 
-        # Extract revenue and net income for the last 2 years
-        revenue = income_statement.loc["Total Revenue"].iloc[:5].to_dict()
-        net_income = income_statement.loc["Net Income"].iloc[:5].to_dict()
+            revenue = {str(year): replace_nan(value) for year, value in revenue.items()}
+            net_income = {str(year): replace_nan(value) for year, value in net_income.items()}
 
-        # Format the data
-        financial_data = {
-            "revenue": {str(year): value for year, value in revenue.items()},
-            "net_income": {str(year): value for year, value in net_income.items()}
-        }
-        return financial_data
+            # Format the data
+            financial_data = {
+                "revenue": revenue,
+                "net_income": net_income
+            }
+            return financial_data
+        except Exception as e:
+            logger.error(f"Error in get_financial_data: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
 
 
 # Instantiate the classes
@@ -184,6 +206,7 @@ async def get_top_articles_endpoint(request: CompanyRequest):
 @app.post("/get-financial-data/")
 async def get_financial_data_endpoint(request: CompanyRequest):
     company_name = request.company_name.strip()
+    print(company_name)
     if not company_name:
         raise HTTPException(status_code=400, detail="Company name cannot be empty")
 

@@ -23,12 +23,6 @@ export const ScrollNav = () => {
             Reports
           </button>
           <button 
-            onClick={() => scrollToSection('insights')}
-            className="hover:text-blue-600 transition-colors"
-          >
-            Insights
-          </button>
-          <button 
             onClick={() => scrollToSection('news')}
             className="hover:text-blue-600 transition-colors"
           >
