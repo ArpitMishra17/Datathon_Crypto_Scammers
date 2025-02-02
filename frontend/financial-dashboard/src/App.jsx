@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header';
 import MetricCard from './components/MetricCard';
 import RevenueChart from './components/RevenueChart';
 import MarketTrends from './components/MarketTrends';
 import { Sections } from './components/Sections';
-import { useState } from 'react';
 import ChatDialog from './components/ChatDialog';
 import SearchBar from './components/SearchBar';
 import SectorForm from './components/SectorForm';
@@ -12,6 +11,7 @@ import SectorForm from './components/SectorForm';
 export default function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [searchResults, setSearchResults] = useState(null);
+  const [query, setQuery] = useState('');
 
   const handleChatClick = () => {
     setIsChatOpen(true);
@@ -22,7 +22,7 @@ export default function App() {
   };
 
   const handleSearch = (query) => {
-    // Simulate sending data to a backend
+    setQuery(query);
     setSearchResults(query);
     console.log('Sending company name to backend:', query);
 
@@ -70,7 +70,7 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <h2 className="text-lg font-semibold mb-4">Revenue vs Profit</h2>
-            <RevenueChart />
+            <RevenueChart query={query} />
           </div>
           <div className="bg-white p-6 rounded-xl shadow-sm">
             <h2 className="text-lg font-semibold mb-4">Market Trends</h2>
@@ -79,7 +79,7 @@ export default function App() {
         </div>
 
         <div>
-          <Sections />
+          <Sections query={query} />
         </div>
 
         {/* Download Button */}
