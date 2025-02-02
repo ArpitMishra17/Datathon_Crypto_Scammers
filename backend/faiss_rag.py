@@ -10,7 +10,7 @@ import dotenv
 
 dotenv.load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_TOKEN")
-PATH = "./Data/stock_data.csv"
+PATH = "../Data/stock_data.csv"
 # print(GROQ_API_KEY)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ class StockAnalysisRAG:
         2. Volatility assessment
         3. Whether it's better suited for long-term or short-term investment
         4. Key observations about price movements
-        Limit the response to 600 words.
+        Limit the response to 100 words.
         """
 
         response = self.client.chat.completions.create(
@@ -155,9 +155,9 @@ class StockAnalysisRAG:
         try:
             quarterly_prices = self.get_quarterly_averages(symbol)
             analysis = self.analyze_stock(symbol, quarterly_prices)
-            # narrative = self.get_narrative(analysis)
+            narrative = self.get_narrative(analysis)
             # output_file = self.save_llm_output(narrative)
-            return quarterly_prices, analysis
+            return quarterly_prices, analysis, narrative
             
         except Exception as e:
             logger.error(f"Error analyzing stock {symbol}: {str(e)}")
