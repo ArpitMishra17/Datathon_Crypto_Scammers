@@ -13,7 +13,7 @@ load_dotenv()
 HF_API_TOKEN = os.getenv("HF_API_KEY")
 
 # Query parameters
-company_name = "Amazon"
+company_name = "Tesla"
 
 # Infer the ticker symbol manually or via an LLM (for now, we'll hardcode it)
 # ticker_symbol = "NVDA"

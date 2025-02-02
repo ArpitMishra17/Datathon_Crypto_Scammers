@@ -6,7 +6,7 @@ import os
 app = FastAPI()
 
 # Initialize the Hugging Face Inference Client
-HUGGING_FACE_API_TOKEN = os.getenv("HF_API_KEY")
+HUGGING_FACE_API_TOKEN = os.getenv("HUGGING_FACE_API_TOKEN", "your_hugging_face_api_token_here")
 client = InferenceClient(api_key=HUGGING_FACE_API_TOKEN)
 
 # Define a Pydantic model for the request body
@@ -22,7 +22,7 @@ def get_hf_response(initial_data, user_message):
         # Send the prompt to the Hugging Face model
         response = client.text_generation(
             prompt=prompt,
-            model="google/gemma-2-9b-it",
+            model="tiiuae/falcon-7b-instruct",
             max_new_tokens=200,  # Limit the output length
             temperature=0.7,     # Controls randomness
             top_k=50,            # Limits the number of tokens considered for sampling
