@@ -35,15 +35,17 @@ export default function SectorForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 rounded-lg">
-      <div className="flex items-center">
+    <form onSubmit={handleSubmit} className=" max-w-md mx-auto p-6 rounded-lg ">
+      <div className="flex flex-col space-y-2">
+        <label htmlFor="sector" className="text-lg font-semibold">
+        </label>
         <select
           id="sector"
           name="sector"
           value={selectedSector}
           onChange={(e) => setSelectedSector(e.target.value)}
           required
-          className="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Search by Sector</option>
           <option value="Healthcare">Healthcare</option>
@@ -52,13 +54,14 @@ export default function SectorForm() {
           <option value="Consumer Goods">Consumer Goods</option>
           <option value="Industrials & Energy">Industrials & Energy</option>
         </select>
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700 transition-colors"
-        >
-          Submit
-        </button>
       </div>
+
+      <button
+        type="submit"
+        className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Submit
+      </button>
     </form>
   );
 }
