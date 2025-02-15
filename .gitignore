@@ -1,6 +1,6 @@
 .env
 RAG_Worker.py
 embedders.py
-
+__pycache__
 embeddings.csv
 /__pycache__/
